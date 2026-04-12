@@ -8,8 +8,7 @@
       "Each item is a testable behavioral statement"
     ],
     "verificationSteps": [
-      "npm test -- --grep 'example feature'",
-      "curl http://localhost:3101/health -> 200"
+      "npm test -- --grep 'example feature'"
     ],
     "fulfills": ["VAL-EXAMPLE-001"],
     "status": "pending"

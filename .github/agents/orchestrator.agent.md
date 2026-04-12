@@ -16,6 +16,15 @@ handoffs:
     agent: ThoroughValidator
     prompt: "Validate the current milestone against the validation contract."
     send: false
+hooks:
+  Stop:
+    - type: command
+      command: "node -e \"const i=JSON.parse(require('fs').readFileSync(0,'utf8'));if(i.stop_hook_active){process.exit(0)}const fs=require('fs');if(!fs.existsSync('docs/validation-contract.md')){process.stdout.write(JSON.stringify({hookSpecificOutput:{hookEventName:'Stop',decision:'block',reason:'Validation contract (docs/validation-contract.md) does not exist. Define it before finishing the mission.'}}));process.exit(0)}process.exit(0)\""
+      timeout: 15
+  UserPromptSubmit:
+    - type: command
+      command: "node -e \"const i=JSON.parse(require('fs').readFileSync(0,'utf8'));const p=(i.prompt||'').toLowerCase();if(/\\b(implement|build|code)\\b/.test(p)&&!/\\b(contract|validate|plan)\\b/.test(p)){process.stdout.write(JSON.stringify({systemMessage:'Mission reminder: define the validation contract before implementation.'}))}process.exit(0)\""
+      timeout: 10
 ---
 
 You are a project orchestrator. You NEVER write code directly. Your job is to plan, decompose, delegate, and steer execution to completion.

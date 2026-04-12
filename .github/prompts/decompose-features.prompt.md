@@ -11,7 +11,7 @@ The validation contract has been defined. Now decompose the work into features.
 1. Read `docs/validation-contract.md` to understand the `VAL-*` assertions.
 2. Use a Planner subagent to research the codebase and identify what needs to change.
 3. Create a list of **bounded features** as a JSON array, each with:
-   - `id`: kebab-case identifier (e.g., `auth-login-endpoint`)
+   - `id`: kebab-case identifier (e.g., `user-list-endpoint`)
    - `description`: what the feature implements
    - `milestone`: which milestone it belongs to
    - `expectedBehavior`: array of testable behavior statements
@@ -27,19 +27,18 @@ The validation contract has been defined. Now decompose the work into features.
 ```json
 [
   {
-    "id": "auth-login-endpoint",
-    "description": "POST /api/auth/login - Validate credentials, issue JWT, set session cookie.",
-    "milestone": "authentication",
+    "id": "user-list-endpoint",
+    "description": "GET /api/users - Return a paginated list of users.",
+    "milestone": "core-api",
     "expectedBehavior": [
-      "Returns 200 with session cookie on valid credentials",
-      "Returns 401 with error message on invalid credentials",
-      "Rate-limits after 5 failed attempts per IP"
+      "Returns 200 with paginated results",
+      "Returns 400 on invalid query parameters"
     ],
     "verificationSteps": [
-      "npm test -- --grep 'auth login'",
-      "curl POST /api/auth/login with valid creds -> 200"
+      "npm test -- --grep 'user list'",
+      "curl GET /api/users -> 200"
     ],
-    "fulfills": ["VAL-AUTH-001"],
+    "fulfills": ["VAL-API-001"],
     "status": "pending"
   }
 ]

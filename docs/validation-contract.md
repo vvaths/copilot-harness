@@ -1,33 +1,13 @@
-# Validation Contract — System Documentation & Improvements
+# Validation Contract
 
-## Milestone 1: Comprehensive Documentation
+<!-- Replace this with your project's validation assertions using /define-validation-contract -->
 
-### VAL-DOC-001: System documentation exists
-`docs/SYSTEM.md` exists and contains sections for all 5 agents, 2 instructions,
-3 prompts, 4 hooks, and 1 skill.
-Tool: file-read
-Evidence: file-exists(docs/SYSTEM.md), section-count >= 12
+## Milestone 1: Example
 
-### VAL-DOC-002: Architecture diagrams
-`docs/SYSTEM.md` includes an architecture diagram showing the agent hierarchy
-and a data flow diagram showing shared state communication.
-Tool: file-read
-Evidence: content-match(```...Orchestrator...Worker...Planner```)
-
-### VAL-DOC-003: Usage guide
-`docs/SYSTEM.md` includes a "How to Use" section with quick start,
-full mission workflow, and individual step instructions.
-Tool: file-read
-Evidence: section-exists(Quick Start), section-exists(Running a Full Mission)
-
-### VAL-DOC-004: Troubleshooting and customization
-`docs/SYSTEM.md` includes a troubleshooting table and a customization guide
-for adding new agents, hooks, instructions, prompts, and skills.
-Tool: file-read
-Evidence: section-exists(Troubleshooting), section-exists(Customization)
-
-### VAL-DOC-005: Glossary
-`docs/SYSTEM.md` includes a glossary defining key terms: mission, milestone,
+### VAL-EXAMPLE-001: Example assertion
+Describe the expected behavior in plain language.
+Tool: terminal
+Evidence: test-output
 validation contract, assertion, feature, subagent, handoff.
 Tool: file-read
 Evidence: section-exists(Glossary), term-count >= 10

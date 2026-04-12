@@ -1,4 +1,4 @@
-# GenCards — Copilot Agent System Documentation
+# Copilot Agent System Documentation
 
 ## Table of Contents
 
@@ -75,8 +75,8 @@ The goal: eliminate unstructured, open-ended AI coding sessions and replace them
  ┌──────────────────────────────────────────────────────┐
  │                   docs/ (shared state)               │
  │  requirements.md → validation-contract.md            │
- │                         → feature-plan.md            │
- │                              → guidelines.md         │
+ │                         → features.json               │
+ │                              → services.yaml           │
  └───────────┬─────────────────────────────┬────────────┘
              │ reads                       │ reads
              ▼                             ▼
@@ -101,9 +101,9 @@ The goal: eliminate unstructured, open-ended AI coding sessions and replace them
 |-------|------|-------|-------|----------------|----------------|
 | **Orchestrator** | Plans, decomposes, delegates, tracks | `agent`, `read`, `search`, `todo`, `web` | Default (strong reasoning) | Yes | Never writes code |
 | **Planner** | Researches codebase, creates plans | `read`, `search`, `web` | Default | No | Read-only access |
-| **Worker** | Implements one feature via TDD | `read`, `edit`, `search`, `execute` | Claude Haiku 4.5 → Gemini 3 Flash (fallback) | No | One feature at a time |
-| **Validator** | Reviews work, surfaces issues | `read`, `search`, `execute` | Default | No | Never fixes — only reports |
-| **ThoroughValidator** | Milestone-level multi-perspective validation | `agent`, `read`, `search`, `execute` | Default | No | 3 parallel isolated perspectives |
+| **Worker** | Implements features via TDD | `read`, `edit`, `search`, `terminal` | Claude Haiku 4.5 → Gemini 3 Flash (fallback) | Yes | TDD mandatory |
+| **Validator** | Reviews work, surfaces issues | `read`, `search`, `terminal` | Default | Yes | Never fixes — only reports |
+| **ThoroughValidator** | Milestone-level multi-perspective validation | `agent`, `read`, `search`, `terminal` | Default | No | 3 parallel isolated perspectives |
 
 ---
 
@@ -113,22 +113,23 @@ The goal: eliminate unstructured, open-ended AI coding sessions and replace them
 
 **Role:** Project orchestrator — the brain of the system. Plans work, decomposes features into milestones, delegates to subagents, and tracks progress via todo lists. Maintains all shared state files in `docs/`.
 
-**When invoked:** Directly by the user (default agent for mission slash commands), or implicitly when using `/run-mission`, `/define-validation-contract`, or `/decompose-features`.
+**When invoked:** Directly by the user, or implicitly when using `/run-mission`, `/define-validation-contract`, or `/decompose-features`.
 
 **Subagents:** Planner, Worker, Validator, ThoroughValidator
 
 **Handoffs:**
 
 | Label | Target Agent | Purpose |
-|-------|-------------|---------|
+|-------|-------------|--------|
 | Start Implementation | Worker | Implement the next feature from the plan |
+| Validate Feature | Validator | Review the last completed feature |
 | Validate Milestone | ThoroughValidator | Validate current milestone against the contract |
 
 **Process:**
 1. Understand requirements via Planner
 2. Define validation contract → `docs/validation-contract.md`
-3. Decompose into features → `docs/feature-plan.md`
-4. Write guidelines → `docs/guidelines.md`
+3. Decompose into features → `docs/features.json`
+4. Create `docs/services.yaml` for commands/ports
 5. Execute features by delegating to Workers (one at a time)
 6. Validate milestones via ThoroughValidator
 7. Handle failures with targeted fix features
@@ -173,14 +174,14 @@ The goal: eliminate unstructured, open-ended AI coding sessions and replace them
 
 **File:** `.github/agents/worker.agent.md`
 
-**Role:** Implements a single feature using strict test-first development. Receives a feature spec with success criteria from the Orchestrator.
+**Role:** Implements features using strict test-first development. Can be used directly for ad-hoc TDD or as a subagent in the mission pipeline.
 
-**When invoked:** By the Orchestrator after feature decomposition, one feature at a time.
+**When invoked:** Directly by the user for TDD work, or by the Orchestrator during mission execution.
 
 **Model selection:** Uses cheaper/faster models (Claude Haiku 4.5 as primary, Gemini 3 Flash as fallback) for cost efficiency.
 
 **TDD Process:**
-1. Read feature spec and `docs/guidelines.md`
+1. Read feature spec and `AGENTS.md`
 2. Write tests first (encoding success criteria)
 3. Run tests — confirm they fail (red phase)
 4. Implement minimum code to pass tests
@@ -200,9 +201,9 @@ The goal: eliminate unstructured, open-ended AI coding sessions and replace them
 
 **File:** `.github/agents/validator.agent.md`
 
-**Role:** Independent reviewer. Evaluates completed work with fresh eyes against the validation contract. Never fixes issues — only surfaces them.
+**Role:** Independent code reviewer. Evaluates work with fresh eyes against success criteria or general best practices. Never fixes issues — only surfaces them.
 
-**When invoked:** By the Orchestrator after a feature or milestone is implemented (lighter-weight checks).
+**When invoked:** Directly by the user for code review, or by the Orchestrator for per-feature validation.
 
 **Output format:**
 ```
@@ -347,25 +348,38 @@ Executes the full end-to-end workflow:
 
 **File:** `.github/hooks/post-edit-remind-tests.json`
 
-Fires when `create_file` or `replace_string_in_file` is used on `.ts/.js/.tsx/.jsx` files. Injects a reminder to run tests. Reinforces the TDD workflow.
-
-### Stop: Require Validation Contract
-
-**File:** `.github/hooks/require-validation-contract.json`
-
-Blocks the agent from stopping if `docs/validation-contract.md` doesn't exist. Enforces contract-first development. Includes a `stop_hook_active` guard to prevent infinite loops.
+Fires when `create_file`, `replace_string_in_file`, or `multi_replace_string_in_file` is used on `.ts/.js/.tsx/.jsx` files. Injects a reminder to run tests.
 
 ### SessionStart: Inject Project Context
 
 **File:** `.github/hooks/inject-project-context.json`
 
-Injects project name, active git branch, and working directory into the agent's context at the start of every session. Helps agents make better decisions with environmental awareness.
+Injects project name, active git branch, and working directory into the agent's context at the start of every session.
 
 ### PreToolUse: Block Dangerous Commands
 
 **File:** `.github/hooks/block-dangerous-commands.json`
 
-Blocks execution of dangerous terminal commands (`rm -rf /`, `DROP TABLE`, `git push --force`, `git reset --hard`, etc.) before they run. Safety net regardless of agent behavior.
+Blocks execution of dangerous terminal commands (`rm -rf /`, `DROP TABLE`, `git push --force`, etc.) before they run.
+
+### SubagentStart: Inject Role Hints
+
+**File:** `.github/hooks/subagent-lifecycle.json`
+
+Injects role-specific reminders when Worker, Planner, Validator, or ThoroughValidator subagents start.
+
+### PreCompact: Save Context
+
+**File:** `.github/hooks/pre-compact-save-context.json`
+
+Reminds the agent to re-read shared state files after context compaction.
+
+### Orchestrator-Scoped Hooks
+
+The Orchestrator agent has two agent-scoped hooks that only fire during mission workflows:
+
+- **Stop**: Blocks the Orchestrator from finishing if `docs/validation-contract.md` doesn't exist
+- **UserPromptSubmit**: Reminds about contract-first development when implementation is requested
 
 ---
 
@@ -381,7 +395,7 @@ Documents the complete mission lifecycle in 5 phases:
 |-------|----------|--------|
 | 1. Requirements | Investigate user's goal | `docs/requirements.md` |
 | 2. Contract | Define testable assertions | `docs/validation-contract.md` |
-| 3. Decomposition | Break into features by milestone | `docs/feature-plan.md` |
+| 3. Decomposition | Break into features by milestone | `docs/features.json` |
 | 4. Execution | Worker implements, Validator checks, fix loop (max 3) | Source code + tests |
 | 5. Completion | All milestones pass | Final report |
 
@@ -404,17 +418,15 @@ Documents the complete mission lifecycle in 5 phases:
 Each assertion uses a unique `VAL-<CATEGORY>-<NNN>` ID and specifies the verification tool and evidence type:
 
 ```markdown
-### VAL-AUTH-001: Successful login
-A user with valid credentials submits the login form
-and is redirected to the dashboard.
-Tool: agent-browser
-Evidence: screenshot, network(POST /api/auth/login -> 200)
+### VAL-API-001: List endpoint returns results
+GET /api/items returns a paginated list of items.
+Tool: terminal
+Evidence: curl(GET /api/items -> 200), response-shape({data: [], total: number})
 
-### VAL-CROSS-001: Auth gates pricing
-A guest user sees "Sign in for pricing" on the catalog.
-After logging in, real prices are shown.
-Tool: agent-browser
-Evidence: screenshot(guest-view), screenshot(authed-view)
+### VAL-API-002: Create endpoint validates input
+POST /api/items with invalid body returns 400.
+Tool: terminal
+Evidence: curl(POST /api/items {} -> 400)
 ```
 
 **Naming convention:** `VAL-<CATEGORY>-<NNN>`
@@ -432,19 +444,18 @@ Features are tracked as a JSON array. Each entry links back to contract assertio
 ```json
 [
   {
-    "id": "auth-login-endpoint",
-    "description": "POST /api/auth/login - Validate credentials, issue JWT, set session cookie.",
-    "milestone": "authentication",
+    "id": "user-list-endpoint",
+    "description": "GET /api/users - Return a paginated list of users.",
+    "milestone": "core-api",
     "expectedBehavior": [
-      "Returns 200 with session cookie on valid credentials",
-      "Returns 401 with error message on invalid credentials",
-      "Rate-limits after 5 failed attempts per IP"
+      "Returns 200 with paginated results",
+      "Returns 400 on invalid query parameters"
     ],
     "verificationSteps": [
-      "npm test -- --grep 'auth login'",
-      "curl POST /api/auth/login with valid creds -> 200"
+      "npm test -- --grep 'user list'",
+      "curl GET /api/users -> 200"
     ],
-    "fulfills": ["VAL-AUTH-001"],
+    "fulfills": ["VAL-API-001"],
     "status": "pending"
   }
 ]
@@ -458,26 +469,15 @@ Defines how to build, test, and run the project. Agents read this to discover co
 
 ```yaml
 commands:
-  install: pnpm install
-  typecheck: npm run typecheck
-  build: turbo build
-  test: npm run test
-  lint: npm run lint
+  install: npm install
+  test: npm test
+  build: npm run build
 
-services:
-  postgres:
-    start: docker compose up -d postgres
-    stop: docker compose stop postgres
-    healthcheck: pg_isready -h localhost -p 5432
-    port: 5432
-    depends_on: []
-
-  api:
-    start: PORT=3101 npm run dev:api
-    stop: lsof -ti :3101 | xargs kill
-    healthcheck: curl -sf http://localhost:3101/health
-    port: 3101
-    depends_on: [postgres]
+# services:
+#   app:
+#     start: npm run dev
+#     healthcheck: curl -sf http://localhost:3000/health
+#     port: 3000
 ```
 
 ---
@@ -486,23 +486,33 @@ services:
 
 ### Quick Start
 
-1. Open your project in VS Code with GitHub Copilot agent mode enabled
-2. Ensure `.github/` folder contains agents, hooks, instructions, prompts, and skills
-3. Type `/run-mission` followed by a description of your goal
-4. Review the validation contract when prompted
-5. Review the feature plan when prompted
-6. Watch as Workers implement and Validators check
+1. Copy this template to your new project
+2. Customize `AGENTS.md` with your project's boundaries and coding conventions
+3. Customize `docs/services.yaml` with your project's commands and services
+4. Customize `.github/copilot-instructions.md` with your code style
+5. Use the default **Agent** mode for everyday development
+6. Use **Worker** for TDD workflows or **Validator** for code review
+7. Use `/run-mission` for large multi-feature projects
+
+### Everyday Development
+
+For most tasks, use the default Agent mode. The instructions and hooks provide:
+- Project conventions (from `copilot-instructions.md` and `AGENTS.md`)
+- TDD enforcement on source files (from `tdd.instructions.md`)
+- Scoped change discipline (from `scoped-changes.instructions.md`)
+- Safety guardrails (from hooks)
+
+Switch to **Worker** when you want strict TDD, or **Validator** for code review.
 
 ### Running a Full Mission
 
 ```
-/run-mission Build a REST API for managing flashcard decks with CRUD,
-spaced repetition scheduling, and user authentication.
+/run-mission Build a REST API with CRUD endpoints, authentication, and tests.
 ```
 
 **What happens:**
 1. **Contract phase** — Planner researches, Orchestrator writes `docs/validation-contract.md`
-2. **Decomposition** — Features grouped by milestone in `docs/feature-plan.md`
+2. **Decomposition** — Features grouped by milestone in `docs/features.json`
 3. **Execution loop** — Worker implements each feature (TDD) → ThoroughValidator reviews → fix loop
 4. **Completion** — Final report with all assertions checked
 
@@ -519,7 +529,7 @@ spaced repetition scheduling, and user authentication.
 - **Be specific** in your initial request — include edge cases and constraints
 - **Review the validation contract carefully** — this is your primary leverage point
 - **Keep milestones small** — 3–5 features per milestone is ideal
-- **Check `docs/guidelines.md`** after Orchestrator writes it — add your own conventions
+- **Check `AGENTS.md`** — add your project's coding conventions and boundaries
 - **If validation loops exceed 3**, split the milestone into smaller ones
 
 ---
@@ -528,11 +538,10 @@ spaced repetition scheduling, and user authentication.
 
 | Problem | Cause | Solution |
 |---------|-------|----------|
-| Worker produces vague code | Feature spec too vague | Add specific files and success criteria to `docs/feature-plan.md` |
+| Worker produces vague code | Feature spec too vague | Add specific files and success criteria to `docs/features.json` |
 | Too many validation rounds | Milestone too large | Split into smaller milestones |
 | Tests not reminded after edits | File extension not matching | Hook only fires for `.ts/.js/.tsx/.jsx` |
-| Agent can't stop | Missing validation contract | Run `/define-validation-contract` first |
-| Worker skips tests | TDD instruction not matching | Check `applyTo` patterns in `tdd.instructions.md` |
+| Worker skips tests | TDD instruction not matching | Check `applyTo` pattern in `tdd.instructions.md` |
 
 ---
 

@@ -13,7 +13,7 @@ When asked to validate a milestone, run these subagents IN PARALLEL:
 
 1. **Contract checker**: Verify each `VAL-*` assertion in `docs/validation-contract.md` against actual system behavior. Use the tool and evidence specified in each assertion. Cross-reference `docs/features.json` to ensure all features with `status: "complete"` actually fulfill their claimed `VAL-*` IDs.
 2. **Scrutiny reviewer**: Review each worker's implementation for code quality, correctness, edge cases, naming, duplication, and pattern consistency. Check adherence to conventions in `AGENTS.md`.
-3. **Security reviewer**: Check for input validation issues, injection risks, data exposure, and authentication/authorization gaps. Verify `AGENTS.md` coding conventions (e.g., no raw SQL, httpOnly cookies).
+3. **Security reviewer**: Check for input validation issues, injection risks, data exposure, and authentication/authorization gaps. Verify adherence to coding conventions in `AGENTS.md`.
 
 After ALL subagents complete:
 

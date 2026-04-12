@@ -1,4 +1,4 @@
-# GenCards — Project-Wide AI Instructions
+# Project-Wide AI Instructions
 
 ## Project Structure
 
@@ -24,8 +24,8 @@ This project uses a mission-lifecycle orchestration framework. See [docs/SYSTEM.
 
 ## Code Style
 
-- TypeScript strict mode, no `any` types
-- Prisma for all database access, no raw SQL
+<!-- Customize these for your project's tech stack -->
+
 - Follow existing patterns in the codebase before inventing new ones
 - Keep functions small and focused
 - Prefer explicit over implicit
