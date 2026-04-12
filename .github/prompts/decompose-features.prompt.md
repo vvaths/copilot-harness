@@ -1,7 +1,7 @@
 ---
 description: "Decompose a validated contract into ordered features grouped by milestone. Use after the validation contract is defined."
 agent: orchestrator
-tools: ['read', 'search', 'agent']
+tools: ['agent', 'read', 'edit', 'search', 'todo']
 ---
 
 The validation contract has been defined. Now decompose the work into features.

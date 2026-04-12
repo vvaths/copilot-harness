@@ -1,6 +1,7 @@
 ---
 name: mission-lifecycle
 description: 'Manage the full mission lifecycle: define validation contracts, decompose features, execute milestones, and run validation loops. Use for orchestrating multi-step autonomous work.'
+user-invocable: false
 ---
 
 # Mission Lifecycle
@@ -48,7 +49,7 @@ A mission is a structured workflow for completing large projects through focused
 | Separation of concerns | Orchestrator plans, Workers implement, Validators evaluate |
 | Test-first at two levels | Workers write tests before code; Orchestrator defines contract before features |
 | Externalized state | Shared files (`docs/`) instead of in-context accumulation |
-| Model specialization | Orchestrator uses strong reasoning model; Workers use fast/cheap models |
+| Model specialization | Orchestrator uses strong reasoning model; Workers use cost-efficient models (Claude Sonnet 4.6) |
 
 ## Shared State Files
 

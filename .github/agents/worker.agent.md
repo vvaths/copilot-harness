@@ -3,7 +3,7 @@ name: Worker
 description: "Implements features with test-first development. Use for TDD workflows — write tests first, then implement."
 argument-hint: "Describe the feature or task to implement"
 tools: ['read', 'edit', 'search', 'terminal']
-model: ['Claude Haiku 4.5 (copilot)', 'Gemini 3 Flash (Preview) (copilot)']
+model: ['Claude Sonnet 4.6 (copilot)', 'GPT-5.4 (copilot)']
 ---
 
 You implement features using strict test-first development.

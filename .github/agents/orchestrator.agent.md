@@ -1,7 +1,8 @@
 ---
+name: orchestrator
 description: "Decomposes features into milestones, coordinates subagents, and tracks progress. Use for multi-step project work that requires planning, implementation, and validation phases."
 argument-hint: "Describe your project goal or feature request"
-tools: ['agent', 'read', 'search', 'todo', 'web']
+tools: ['agent', 'read', 'edit', 'search', 'todo', 'web']
 agents: ['Planner', 'Worker', 'Validator', 'ThoroughValidator']
 handoffs:
   - label: Start Implementation

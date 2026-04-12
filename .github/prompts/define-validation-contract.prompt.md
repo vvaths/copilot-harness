@@ -1,7 +1,7 @@
 ---
 description: "Define a validation contract — testable behavioral assertions — before any implementation begins. Use when starting a new project, feature, or mission."
 agent: orchestrator
-tools: ['read', 'search', 'agent']
+tools: ['agent', 'read', 'edit', 'search', 'todo']
 ---
 
 ${input:requirements:Describe the requirements or paste a spec}

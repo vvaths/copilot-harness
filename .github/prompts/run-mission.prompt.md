@@ -1,7 +1,7 @@
 ---
 description: "Execute the full mission workflow: contract → features → implement → validate. Use for large multi-step projects."
 agent: orchestrator
-tools: ['agent', 'read', 'search', 'todo', 'edit']
+tools: ['agent', 'read', 'edit', 'search', 'todo', 'web']
 ---
 
 ${input:goal:Describe your project goal or feature request}

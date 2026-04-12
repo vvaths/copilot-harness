@@ -99,9 +99,9 @@ The goal: eliminate unstructured, open-ended AI coding sessions and replace them
 
 | Agent | Role | Tools | Model | User-Invocable | Key Constraint |
 |-------|------|-------|-------|----------------|----------------|
-| **Orchestrator** | Plans, decomposes, delegates, tracks | `agent`, `read`, `search`, `todo`, `web` | Default (strong reasoning) | Yes | Never writes code |
+| **Orchestrator** | Plans, decomposes, delegates, tracks | `agent`, `read`, `edit`, `search`, `todo`, `web` | Default (strong reasoning) | Yes | Never writes code |
 | **Planner** | Researches codebase, creates plans | `read`, `search`, `web` | Default | No | Read-only access |
-| **Worker** | Implements features via TDD | `read`, `edit`, `search`, `terminal` | Claude Haiku 4.5 → Gemini 3 Flash (fallback) | Yes | TDD mandatory |
+| **Worker** | Implements features via TDD | `read`, `edit`, `search`, `terminal` | Claude Sonnet 4.6 → GPT-5.4 (fallback) | Yes | TDD mandatory |
 | **Validator** | Reviews work, surfaces issues | `read`, `search`, `terminal` | Default | Yes | Never fixes — only reports |
 | **ThoroughValidator** | Milestone-level multi-perspective validation | `agent`, `read`, `search`, `terminal` | Default | No | 3 parallel isolated perspectives |
 
@@ -178,7 +178,7 @@ The goal: eliminate unstructured, open-ended AI coding sessions and replace them
 
 **When invoked:** Directly by the user for TDD work, or by the Orchestrator during mission execution.
 
-**Model selection:** Uses cheaper/faster models (Claude Haiku 4.5 as primary, Gemini 3 Flash as fallback) for cost efficiency.
+**Model selection:** Uses cheaper/faster models (Claude Sonnet 4.6 as primary, GPT-5.4 as fallback) for cost efficiency.
 
 **TDD Process:**
 1. Read feature spec and `AGENTS.md`
