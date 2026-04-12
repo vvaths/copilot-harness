@@ -1,0 +1,7 @@
+{
+  "chat.subagents.allowInvocationsFromSubagents": true,
+  "chat.useAgentsMdFile": true,
+  "chat.useCustomAgentHooks": true,
+  "chat.includeApplyingInstructions": true,
+  "chat.includeReferencedInstructions": true
+}

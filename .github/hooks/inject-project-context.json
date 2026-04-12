@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node -e \"const p=require('path'); const cwd=process.cwd(); const name=p.basename(cwd); let branch='unknown'; try{branch=require('child_process').execSync('git branch --show-current',{encoding:'utf8'}).trim()}catch(e){} process.stdout.write(JSON.stringify({hookSpecificOutput:{hookEventName:'SessionStart',additionalContext:'Project: '+name+' | Branch: '+branch+' | CWD: '+cwd}}))\"",
+        "timeout": 10
+      }
+    ]
+  }
+}

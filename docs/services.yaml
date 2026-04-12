@@ -1,0 +1,32 @@
+# Project Services & Commands
+# This file is read by agents to discover how to build, test, and run services.
+# Update this file when adding new services or changing ports.
+
+commands:
+  install: pnpm install
+  typecheck: npm run typecheck
+  build: turbo build
+  test: npm run test
+  lint: npm run lint
+
+services:
+  postgres:
+    start: docker compose up -d postgres
+    stop: docker compose stop postgres
+    healthcheck: pg_isready -h localhost -p 5432
+    port: 5432
+    depends_on: []
+
+  api:
+    start: PORT=3101 npm run dev:api
+    stop: lsof -ti :3101 | xargs kill
+    healthcheck: curl -sf http://localhost:3101/health
+    port: 3101
+    depends_on: [postgres]
+
+  frontend:
+    start: PORT=3100 npm run dev:frontend
+    stop: lsof -ti :3100 | xargs kill
+    healthcheck: curl -sf http://localhost:3100
+    port: 3100
+    depends_on: [api]

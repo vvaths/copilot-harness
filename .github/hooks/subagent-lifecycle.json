@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "SubagentStart": [
+      {
+        "type": "command",
+        "command": "node -e \"const i=JSON.parse(require('fs').readFileSync(0,'utf8'));const hints={Worker:'Follow TDD strictly: write tests FIRST, then implement. Check AGENTS.md for mission boundaries.',Planner:'Read-only research only. Search existing code before suggesting approaches. Be specific about files and functions.',Validator:'Review only, never fix. Cite specific files, lines, and evidence. Check every VAL-* assertion.',ThoroughValidator:'Run all 3 perspectives in parallel with isolated context. Check every VAL-* assertion in the contract.'};const msg=hints[i.agent_type];if(msg){process.stdout.write(JSON.stringify({hookSpecificOutput:{hookEventName:'SubagentStart',additionalContext:msg}}))}\"",
+        "timeout": 10
+      }
+    ],
+    "SubagentStop": [
+      {
+        "type": "command",
+        "command": "node -e \"const i=JSON.parse(require('fs').readFileSync(0,'utf8'));if(i.stop_hook_active){process.exit(0)}process.exit(0)\"",
+        "timeout": 10
+      }
+    ]
+  }
+}

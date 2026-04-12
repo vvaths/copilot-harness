@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "type": "command",
+        "command": "node -e \"const fs=require('fs');const files=['docs/validation-contract.md','docs/features.json','docs/services.yaml'];const status=files.map(f=>{try{const s=fs.statSync(f);return f+' ('+s.size+'b)'}catch(e){return f+' (missing)'}}).join(', ');process.stdout.write(JSON.stringify({systemMessage:'Context compacting. Shared state: '+status+'. Re-read these files after compaction to restore mission context.'}))\"",
+        "timeout": 10
+      }
+    ]
+  }
+}

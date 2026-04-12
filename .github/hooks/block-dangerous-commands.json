@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "node -e \"const t=JSON.parse(require('fs').readFileSync(0,'utf8')); if(t.tool_name==='run_in_terminal'||t.tool_name==='terminal'){const cmd=(t.tool_input?.command||t.tool_input?.input||'').toLowerCase(); const blocked=['rm -rf /','rm -rf ~','drop table','drop database','git push --force','git push -f','git reset --hard','mkfs','format c:',':(){:|:&};:']; const match=blocked.find(b=>cmd.includes(b)); if(match){process.stdout.write(JSON.stringify({hookSpecificOutput:{hookEventName:'PreToolUse',permissionDecision:'deny',permissionDecisionReason:'Blocked dangerous command: '+match}}));process.exit(0)}} process.exit(0)\"",
+        "timeout": 10
+      }
+    ]
+  }
+}

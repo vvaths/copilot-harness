@@ -1,0 +1,17 @@
+[
+  {
+    "id": "example-feature",
+    "description": "Example feature entry — replace with real features during /decompose-features.",
+    "milestone": "example-milestone",
+    "expectedBehavior": [
+      "Describe what the feature should do when working correctly",
+      "Each item is a testable behavioral statement"
+    ],
+    "verificationSteps": [
+      "npm test -- --grep 'example feature'",
+      "curl http://localhost:3101/health -> 200"
+    ],
+    "fulfills": ["VAL-EXAMPLE-001"],
+    "status": "pending"
+  }
+]

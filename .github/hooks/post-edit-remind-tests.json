@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "node -e \"const t=JSON.parse(require('fs').readFileSync(0,'utf8')); if(t.tool_name==='create_file'||t.tool_name==='replace_string_in_file'||t.tool_name==='multi_replace_string_in_file'){const p=t.tool_input?.filePath||t.tool_input?.replacements?.[0]?.filePath||''; if(/\\.(ts|js|tsx|jsx)$/.test(p)){process.stdout.write(JSON.stringify({hookSpecificOutput:{hookEventName:'PostToolUse',additionalContext:'File was edited. Remind the worker to run tests if they have not already.'}}))}}\"",
+        "timeout": 10
+      }
+    ]
+  }
+}

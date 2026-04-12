@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "node -e \"const i=JSON.parse(require('fs').readFileSync(0,'utf8'));const p=(i.prompt||'').toLowerCase();if(/\\b(implement|build|create|add feature)\\b/.test(p)&&!/\\b(test|tdd|contract|validate)\\b/.test(p)){process.stdout.write(JSON.stringify({systemMessage:'Reminder: This project uses contract-first, test-first development. Consider defining validation criteria before implementation.'}))}\"",
+        "timeout": 10
+      }
+    ]
+  }
+}

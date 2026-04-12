@@ -1,0 +1,17 @@
+[
+  {
+    "id": "example-feature-id",
+    "description": "Brief description of what this feature implements.",
+    "milestone": "milestone-name",
+    "expectedBehavior": [
+      "Testable behavior statement 1",
+      "Testable behavior statement 2"
+    ],
+    "verificationSteps": [
+      "npm test -- --grep 'feature name'",
+      "curl command or other verification"
+    ],
+    "fulfills": ["VAL-CATEGORY-001"],
+    "status": "pending"
+  }
+]
