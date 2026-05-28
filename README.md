@@ -26,7 +26,7 @@ docs/
 
 ## Quick Start
 
-### 1. Copy the template
+### 1. Copy the template and run repository onboarding
 
 ```bash
 # Clone or copy into your new project directory
@@ -36,9 +36,38 @@ cp -r template-repo/docs your-project/docs
 cp template-repo/AGENTS.md your-project/AGENTS.md
 ```
 
-### 2. Customize for your project
+Then open `your-project` in VS Code Agent mode or Copilot cloud agent and run this onboarding prompt on a feature branch:
 
-Edit three files to match your tech stack:
+```text
+Create and work on a feature branch named feat/copilot-onboarding-instructions.
+
+Onboard this repository for GitHub Copilot agents by updating all repository-specific AI guidance files. Search the repo thoroughly before editing, including README, CONTRIBUTING docs, package/build files, CI workflows, scripts, lint/test configs, source layout, and existing instruction files.
+
+Update these files when they exist, and create them only when missing:
+- AGENTS.md: project boundaries, coding conventions, agent workflow expectations, validation expectations, and any service/port constraints.
+- .github/copilot-instructions.md: durable repository-wide instructions for Copilot agents, including project summary, architecture, commands, validation workflow, and known pitfalls.
+- .github/instructions/*.instructions.md: path-specific instructions with accurate applyTo globs for important tech stacks, tests, generated files, migrations, docs, or other specialized areas.
+- docs/services.yaml: install, build, test, lint, run, healthcheck, ports, and service startup details.
+- docs/validation-contract.md and docs/features.json: keep placeholders if this repo has no active mission, otherwise align them with the current mission.
+
+Follow these rules:
+- Prefer concise, durable guidance over task-specific notes.
+- Include only facts verified from this repository or from commands you actually ran.
+- Document the exact commands that work, their required order, and any required environment setup.
+- Note commands that fail, timeout, or require unavailable services, including observed errors and safe workarounds.
+- Keep secrets, credentials, local machine paths, and personal preferences out of instruction files.
+- Preserve this template's mission-lifecycle conventions unless the repository intentionally overrides them.
+- Use path-specific instruction files for file-type or directory-specific rules instead of overloading repository-wide instructions.
+- Trust the final instruction files in future tasks and search only when the instructions are incomplete or appear wrong.
+
+When finished, summarize what changed and which commands were validated.
+```
+
+This prompt follows GitHub's repository custom-instruction guidance: capture project layout, validated build/test commands, CI expectations, durable conventions, and path-specific instructions with `applyTo` globs.
+
+### 2. Review the generated project guidance
+
+Review at least these files before starting work:
 
 **`AGENTS.md`** — Add your project's boundaries and coding conventions:
 ```markdown
